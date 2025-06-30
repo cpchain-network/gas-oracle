@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option go_package = "./proto/gasfee";
+option java_package = "com.cpchain.gasfee";
+package cpchain.gasfee;
+
+
+message GasFeeRequest {
+  string consumer_token = 1;
+  uint64 chain_id = 2;
+}
+
+message GasFeeResponse {
+  uint64 return_code =1;
+  string message = 2;
+  uint64 block_fee = 3;
+  uint64 gas_fee = 4;
+}
+
+service GasFeeServices {
+  rpc getGasFeeByChainId(GasFeeRequest) returns (GasFeeResponse) {}
+}

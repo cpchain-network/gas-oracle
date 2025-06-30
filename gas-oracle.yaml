@@ -1,0 +1,30 @@
+slave_db_enable: false
+enable_api_cache: false
+back_offset: 2
+loop_internal: 5s
+
+server:
+  host: 0.0.0.0
+  port: 8080
+
+rpcs:
+  - rpc_url: 'https://opt-sepolia.g.alchemy.com/v2/M98Abo5XZqswpBv4ppyXJ'
+    chain_id: 11155420
+
+  - rpc_url: 'https://arb-sepolia.g.alchemy.com/v2/M98Abo5XZqswpBv4ppyXJ'
+    chain_id: 421614
+
+
+master_db:
+  db_host: "127.0.0.1"
+  db_port: 5432
+  db_user: "guoshijiang"
+  db_password: ""
+  db_name: "gasoracle"
+
+slave_db:
+  db_host: "127.0.0.1"
+  db_port: 5432
+  db_user: "guoshijiang"
+  db_password: ""
+  db_name: "gasoracle"
