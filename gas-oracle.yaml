@@ -7,6 +7,7 @@ server:
   host: 0.0.0.0
   port: 8081
 
+
 rpcs:
   - rpc_url: 'https://opt-sepolia.g.alchemy.com/v2/M98Abo5XZqswpBv4ppyXJ'
     chain_id: 11155420
