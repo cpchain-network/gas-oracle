@@ -22,5 +22,6 @@ COPY --from=builder /app/gas-oracle/gas-oracle /usr/local/bin
 COPY --from=builder /app/gas-oracle/gas-oracle.yaml /app/gas-oracle/gas-oracle.yaml
 COPY --from=builder /app/gas-oracle/migrations /app/gas-oracle/migrations
 
-ENV INDEXER_MIGRATIONS_DIR="/app/gas-oracle/migrations"
+ENV GAS_ORACLE_CONFIG="/app/gas-oracle/migrations"
+ENV GAS_ORACLE_MIGRATIONS_DIR="/app/gas-oracle/gas-oracle.yaml"
 WORKDIR /app/gas-oracle
