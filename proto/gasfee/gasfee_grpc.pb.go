@@ -19,99 +19,99 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GasFeeServices_GetGasFeeByChainId_FullMethodName = "/cpchain.gasfee.GasFeeServices/getGasFeeByChainId"
+	TokenGasPriceServices_GetTokenPriceAndGasByChainId_FullMethodName = "/cpchain.gasfee.TokenGasPriceServices/getTokenPriceAndGasByChainId"
 )
 
-// GasFeeServicesClient is the client API for GasFeeServices service.
+// TokenGasPriceServicesClient is the client API for TokenGasPriceServices service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type GasFeeServicesClient interface {
-	GetGasFeeByChainId(ctx context.Context, in *GasFeeRequest, opts ...grpc.CallOption) (*GasFeeResponse, error)
+type TokenGasPriceServicesClient interface {
+	GetTokenPriceAndGasByChainId(ctx context.Context, in *TokenGasPriceRequest, opts ...grpc.CallOption) (*TokenGasPriceResponse, error)
 }
 
-type gasFeeServicesClient struct {
+type tokenGasPriceServicesClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewGasFeeServicesClient(cc grpc.ClientConnInterface) GasFeeServicesClient {
-	return &gasFeeServicesClient{cc}
+func NewTokenGasPriceServicesClient(cc grpc.ClientConnInterface) TokenGasPriceServicesClient {
+	return &tokenGasPriceServicesClient{cc}
 }
 
-func (c *gasFeeServicesClient) GetGasFeeByChainId(ctx context.Context, in *GasFeeRequest, opts ...grpc.CallOption) (*GasFeeResponse, error) {
+func (c *tokenGasPriceServicesClient) GetTokenPriceAndGasByChainId(ctx context.Context, in *TokenGasPriceRequest, opts ...grpc.CallOption) (*TokenGasPriceResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GasFeeResponse)
-	err := c.cc.Invoke(ctx, GasFeeServices_GetGasFeeByChainId_FullMethodName, in, out, cOpts...)
+	out := new(TokenGasPriceResponse)
+	err := c.cc.Invoke(ctx, TokenGasPriceServices_GetTokenPriceAndGasByChainId_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// GasFeeServicesServer is the server API for GasFeeServices service.
-// All implementations should embed UnimplementedGasFeeServicesServer
+// TokenGasPriceServicesServer is the server API for TokenGasPriceServices service.
+// All implementations should embed UnimplementedTokenGasPriceServicesServer
 // for forward compatibility.
-type GasFeeServicesServer interface {
-	GetGasFeeByChainId(context.Context, *GasFeeRequest) (*GasFeeResponse, error)
+type TokenGasPriceServicesServer interface {
+	GetTokenPriceAndGasByChainId(context.Context, *TokenGasPriceRequest) (*TokenGasPriceResponse, error)
 }
 
-// UnimplementedGasFeeServicesServer should be embedded to have
+// UnimplementedTokenGasPriceServicesServer should be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedGasFeeServicesServer struct{}
+type UnimplementedTokenGasPriceServicesServer struct{}
 
-func (UnimplementedGasFeeServicesServer) GetGasFeeByChainId(context.Context, *GasFeeRequest) (*GasFeeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetGasFeeByChainId not implemented")
+func (UnimplementedTokenGasPriceServicesServer) GetTokenPriceAndGasByChainId(context.Context, *TokenGasPriceRequest) (*TokenGasPriceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTokenPriceAndGasByChainId not implemented")
 }
-func (UnimplementedGasFeeServicesServer) testEmbeddedByValue() {}
+func (UnimplementedTokenGasPriceServicesServer) testEmbeddedByValue() {}
 
-// UnsafeGasFeeServicesServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to GasFeeServicesServer will
+// UnsafeTokenGasPriceServicesServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TokenGasPriceServicesServer will
 // result in compilation errors.
-type UnsafeGasFeeServicesServer interface {
-	mustEmbedUnimplementedGasFeeServicesServer()
+type UnsafeTokenGasPriceServicesServer interface {
+	mustEmbedUnimplementedTokenGasPriceServicesServer()
 }
 
-func RegisterGasFeeServicesServer(s grpc.ServiceRegistrar, srv GasFeeServicesServer) {
-	// If the following call pancis, it indicates UnimplementedGasFeeServicesServer was
+func RegisterTokenGasPriceServicesServer(s grpc.ServiceRegistrar, srv TokenGasPriceServicesServer) {
+	// If the following call pancis, it indicates UnimplementedTokenGasPriceServicesServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&GasFeeServices_ServiceDesc, srv)
+	s.RegisterService(&TokenGasPriceServices_ServiceDesc, srv)
 }
 
-func _GasFeeServices_GetGasFeeByChainId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GasFeeRequest)
+func _TokenGasPriceServices_GetTokenPriceAndGasByChainId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TokenGasPriceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(GasFeeServicesServer).GetGasFeeByChainId(ctx, in)
+		return srv.(TokenGasPriceServicesServer).GetTokenPriceAndGasByChainId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: GasFeeServices_GetGasFeeByChainId_FullMethodName,
+		FullMethod: TokenGasPriceServices_GetTokenPriceAndGasByChainId_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(GasFeeServicesServer).GetGasFeeByChainId(ctx, req.(*GasFeeRequest))
+		return srv.(TokenGasPriceServicesServer).GetTokenPriceAndGasByChainId(ctx, req.(*TokenGasPriceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// GasFeeServices_ServiceDesc is the grpc.ServiceDesc for GasFeeServices service.
+// TokenGasPriceServices_ServiceDesc is the grpc.ServiceDesc for TokenGasPriceServices service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var GasFeeServices_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "cpchain.gasfee.GasFeeServices",
-	HandlerType: (*GasFeeServicesServer)(nil),
+var TokenGasPriceServices_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "cpchain.gasfee.TokenGasPriceServices",
+	HandlerType: (*TokenGasPriceServicesServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "getGasFeeByChainId",
-			Handler:    _GasFeeServices_GetGasFeeByChainId_Handler,
+			MethodName: "getTokenPriceAndGasByChainId",
+			Handler:    _TokenGasPriceServices_GetTokenPriceAndGasByChainId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -16,8 +16,9 @@ import (
 )
 
 type DB struct {
-	gorm   *gorm.DB
-	GasFee GasFeeDB
+	gorm       *gorm.DB
+	GasFee     GasFeeDB
+	TokenPrice TokenPriceDB
 }
 
 func NewDB(ctx context.Context, dbConfig config.Database) (*DB, error) {
@@ -49,8 +50,9 @@ func NewDB(ctx context.Context, dbConfig config.Database) (*DB, error) {
 		return nil, err
 	}
 	db := &DB{
-		gorm:   gorm,
-		GasFee: NewGasFeeDB(gorm),
+		gorm:       gorm,
+		GasFee:     NewGasFeeDB(gorm),
+		TokenPrice: NewTokenPriceDB(gorm),
 	}
 	return db, nil
 }
@@ -58,8 +60,9 @@ func NewDB(ctx context.Context, dbConfig config.Database) (*DB, error) {
 func (db *DB) Transaction(fn func(db *DB) error) error {
 	return db.gorm.Transaction(func(gorm *gorm.DB) error {
 		txDB := &DB{
-			gorm:   gorm,
-			GasFee: NewGasFeeDB(gorm),
+			gorm:       gorm,
+			GasFee:     NewGasFeeDB(gorm),
+			TokenPrice: NewTokenPriceDB(gorm),
 		}
 		return fn(txDB)
 	})

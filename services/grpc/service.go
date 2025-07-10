@@ -16,30 +16,30 @@ import (
 
 const MaxRecvMessageSize = 1024 * 1024 * 30000
 
-type GasFeeRpcConfig struct {
+type TokenPriceRpcConfig struct {
 	Host string
 	Port int
 }
 
-type GasFeeRpcService struct {
-	*GasFeeRpcConfig
+type TokenPriceRpcService struct {
+	*TokenPriceRpcConfig
 
 	db *database.DB
 
-	gasfee.UnimplementedGasFeeServicesServer
+	gasfee.UnimplementedTokenGasPriceServicesServer
 	stopped atomic.Bool
 }
 
-func NewGasFeeRpcService(conf *GasFeeRpcConfig, db *database.DB) (*GasFeeRpcService, error) {
-	return &GasFeeRpcService{
-		GasFeeRpcConfig: conf,
-		db:              db,
+func NewTokenPriceRpcService(conf *TokenPriceRpcConfig, db *database.DB) (*TokenPriceRpcService, error) {
+	return &TokenPriceRpcService{
+		TokenPriceRpcConfig: conf,
+		db:                  db,
 	}, nil
 }
 
-func (ms *GasFeeRpcService) Start(ctx context.Context) error {
-	go func(ms *GasFeeRpcService) {
-		rpcAddr := fmt.Sprintf("%s:%d", ms.GasFeeRpcConfig.Host, ms.GasFeeRpcConfig.Port)
+func (ms *TokenPriceRpcService) Start(ctx context.Context) error {
+	go func(ms *TokenPriceRpcService) {
+		rpcAddr := fmt.Sprintf("%s:%d", ms.TokenPriceRpcConfig.Host, ms.TokenPriceRpcConfig.Port)
 		listener, err := net.Listen("tcp", rpcAddr)
 		if err != nil {
 			log.Error("Could not start tcp listener. ")
@@ -55,7 +55,7 @@ func (ms *GasFeeRpcService) Start(ctx context.Context) error {
 		)
 
 		reflection.Register(gs)
-		gasfee.RegisterGasFeeServicesServer(gs, ms)
+		gasfee.RegisterTokenGasPriceServicesServer(gs, ms)
 
 		log.Info("grpc info", "addr", listener.Addr())
 
@@ -66,11 +66,11 @@ func (ms *GasFeeRpcService) Start(ctx context.Context) error {
 	return nil
 }
 
-func (ms *GasFeeRpcService) Stop(ctx context.Context) error {
+func (ms *TokenPriceRpcService) Stop(ctx context.Context) error {
 	ms.stopped.Store(true)
 	return nil
 }
 
-func (ms *GasFeeRpcService) Stopped() bool {
+func (ms *TokenPriceRpcService) Stopped() bool {
 	return ms.stopped.Load()
 }

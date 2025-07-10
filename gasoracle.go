@@ -13,12 +13,15 @@ import (
 	"github.com/cpchain-network/gas-oracle/database"
 	"github.com/cpchain-network/gas-oracle/synchronizer"
 	"github.com/cpchain-network/gas-oracle/synchronizer/node"
+	"github.com/cpchain-network/gas-oracle/worker"
 )
 
 type GasOracle struct {
 	db           *database.DB
 	ethClient    map[uint64]node.EthClient
-	Synchronizer map[uint64]*synchronizer.OracleSynchronizer
+	synchronizer map[uint64]*synchronizer.OracleSynchronizer
+	workerHandle *worker.WorkerHandle
+	symbolList   []string
 	shutdown     context.CancelCauseFunc
 	stopped      atomic.Bool
 	backOffset   uint64
@@ -44,18 +47,25 @@ func (as *GasOracle) Start(ctx context.Context) error {
 	for i := range as.chainIdList {
 		log.Info("starting sync", "chainId", as.chainIdList[i])
 		realChainId := as.chainIdList[i]
-		if err := as.Synchronizer[realChainId].Start(context.Background()); err != nil {
+		if err := as.synchronizer[realChainId].Start(context.Background()); err != nil {
 			return fmt.Errorf("failed to start chain sync: %w", err)
 		}
 	}
+
+	err := as.workerHandle.Start()
+	if err != nil {
+		log.Error("start work handle fail", "err", err)
+		return err
+	}
+
 	return nil
 }
 
 func (as *GasOracle) Stop(ctx context.Context) error {
 	var result error
 	for i := range as.chainIdList {
-		if as.Synchronizer[as.chainIdList[i]] != nil {
-			if err := as.Synchronizer[as.chainIdList[i]].Stop(ctx); err != nil {
+		if as.synchronizer[as.chainIdList[i]] != nil {
+			if err := as.synchronizer[as.chainIdList[i]].Stop(ctx); err != nil {
 				result = errors.Join(result, fmt.Errorf("failed to close synchronizer: %w", err))
 			}
 		}
@@ -68,6 +78,12 @@ func (as *GasOracle) Stop(ctx context.Context) error {
 		if err := as.db.Close(); err != nil {
 			result = errors.Join(result, fmt.Errorf("failed to close DB: %w", err))
 		}
+	}
+
+	err := as.workerHandle.Close()
+	if err != nil {
+		log.Error("close work handle fail", "err", err)
+		return err
 	}
 
 	as.stopped.Store(true)
@@ -91,7 +107,11 @@ func (as *GasOracle) initFromConfig(ctx context.Context, cfg *config.Config) err
 	}
 
 	if err := as.initSynchronizer(cfg); err != nil {
-		return fmt.Errorf("failed to init L1 Sync: %w", err)
+		return fmt.Errorf("failed to init Sync: %w", err)
+	}
+
+	if err := as.initWorkerHandle(cfg); err != nil {
+		return fmt.Errorf("failed to init work handle: %w", err)
 	}
 
 	return nil
@@ -131,15 +151,38 @@ func (as *GasOracle) initSynchronizer(config *config.Config) error {
 		log.Info("Init synchronizer success", "chainId", config.RPCs[i].ChainId)
 		rpcItem := config.RPCs[i]
 
-		synchronizerTemp, err := synchronizer.NewOracleSynchronizer(as.db, as.ethClient[config.RPCs[i].ChainId], as.backOffset, rpcItem.ChainId, as.loopInternal, as.shutdown)
+		synchronizerTemp, err := synchronizer.NewOracleSynchronizer(as.db, as.ethClient[config.RPCs[i].ChainId], as.backOffset, rpcItem.ChainId, rpcItem.NativeToken, rpcItem.Decimal, as.loopInternal, as.shutdown)
 		if err != nil {
 			log.Error("new oracle synchronizer fail", "err", err)
 			return err
 		}
-		if as.Synchronizer == nil {
-			as.Synchronizer = make(map[uint64]*synchronizer.OracleSynchronizer)
+		if as.synchronizer == nil {
+			as.synchronizer = make(map[uint64]*synchronizer.OracleSynchronizer)
 		}
-		as.Synchronizer[rpcItem.ChainId] = synchronizerTemp
+		as.synchronizer[rpcItem.ChainId] = synchronizerTemp
 	}
+	return nil
+}
+
+func (as *GasOracle) initWorkerHandle(config *config.Config) error {
+	var symbolList []worker.Symbols
+	for _, symbol := range config.Symbols {
+		item := worker.Symbols{
+			Name:    symbol.Name,
+			Decimal: symbol.Decimal,
+		}
+		symbolList = append(symbolList, item)
+	}
+	wConf := &worker.WorkerHandleConfig{
+		BaseUrl:      config.SkyeyeUrl,
+		LoopInterval: time.Second * 5,
+		SymbolList:   symbolList,
+	}
+	handle, err := worker.NewWorkerHandle(as.db, wConf, as.shutdown)
+	if err != nil {
+		log.Error("new work handle fail", "err", err)
+		return err
+	}
+	as.workerHandle = handle
 	return nil
 }

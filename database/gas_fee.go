@@ -7,16 +7,16 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 
-	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/log"
 )
 
 type GasFee struct {
-	GUID         uuid.UUID      `json:"guid" gorm:"primaryKey;DEFAULT replace(uuid_generate_v4()::text,'-','');serializer:uuid"`
-	ChainId      *big.Int       `json:"chain_id" gorm:"serializer:u256"`
-	TokenAddress common.Address `json:"token_address" gorm:"serializer:bytes"`
-	GasFee       *big.Int       `json:"gas_fee" gorm:"serializer:u256"`
-	Timestamp    uint64         `json:"timestamp"`
+	GUID       uuid.UUID `json:"guid" gorm:"primaryKey;DEFAULT replace(uuid_generate_v4()::text,'-','');serializer:uuid"`
+	ChainId    *big.Int  `json:"chain_id" gorm:"serializer:u256"`
+	TokenName  string    `json:"token_name"`
+	Decimal    uint8     `json:"decimal"`
+	PredictFee string    `json:"predict_fee"`
+	Timestamp  uint64    `json:"timestamp"`
 }
 
 func (GasFee) TableName() string {
@@ -49,9 +49,10 @@ func (db *gasFeeDB) StoreOrUpdateGasFee(gasFee *GasFee) error {
 			return result.Error
 		}
 	}
-	gasFeeRecord.GasFee = gasFee.GasFee
-	gasFeeRecord.ChainId = gasFee.ChainId
+	gasFeeRecord.TokenName = gasFee.TokenName
+	gasFeeRecord.PredictFee = gasFee.PredictFee
 	gasFeeRecord.Timestamp = gasFee.Timestamp
+	gasFeeRecord.Decimal = gasFee.Decimal
 	err = db.gorm.Table("gas_fee").Save(gasFeeRecord).Error
 	if err != nil {
 		log.Error("save gas fee record fail", "err", err)

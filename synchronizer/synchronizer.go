@@ -22,7 +22,9 @@ type OracleSynchronizer struct {
 	db             *database.DB
 	ethClient      node.EthClient
 	blockOffset    uint64
-	ChainId        uint64
+	chainId        uint64
+	nativeToken    string
+	decimal        uint8
 	stopped        atomic.Bool
 	resourceCtx    context.Context
 	resourceCancel context.CancelFunc
@@ -38,14 +40,16 @@ func (os *OracleSynchronizer) Stopped() bool {
 	return os.stopped.Load()
 }
 
-func NewOracleSynchronizer(db *database.DB, client node.EthClient, blockOffset uint64, ChainId uint64, loopInternal time.Duration, shutdown context.CancelCauseFunc) (*OracleSynchronizer, error) {
+func NewOracleSynchronizer(db *database.DB, client node.EthClient, blockOffset uint64, chainId uint64, nativeToken string, decimal uint8, loopInternal time.Duration, shutdown context.CancelCauseFunc) (*OracleSynchronizer, error) {
 
 	resCtx, resCancel := context.WithCancel(context.Background())
 
 	return &OracleSynchronizer{
 		loopInternal: loopInternal,
 		db:           db,
-		ChainId:      ChainId,
+		chainId:      chainId,
+		nativeToken:  nativeToken,
+		decimal:      decimal,
 		ethClient:    client,
 		blockOffset:  blockOffset,
 		tasks: tasks.Group{HandleCrit: func(err error) {
@@ -60,17 +64,19 @@ func (os *OracleSynchronizer) Start(ctx context.Context) error {
 	l1FeeTicker := time.NewTicker(os.loopInternal)
 	os.tasks.Go(func() error {
 		for range l1FeeTicker.C {
-			fee, err := os.processGasFee(os.ChainId)
+			fee, err := os.processTokenPrice(os.chainId)
 			if err != nil {
+				log.Error("process token price error", "err", err)
 				log.Error(err.Error())
 			}
-			log.Info("get gas fee", "fee", fee, "chainId", os.ChainId)
+			log.Info("get gas fee", "fee", fee, "chainId", os.chainId)
 			gasFee := &database.GasFee{
-				GUID:         uuid.New(),
-				ChainId:      big.NewInt(int64(os.ChainId)),
-				TokenAddress: common.Address{},
-				GasFee:       fee,
-				Timestamp:    uint64(time.Now().Unix()),
+				GUID:       uuid.New(),
+				ChainId:    big.NewInt(int64(os.chainId)),
+				Decimal:    os.decimal,
+				TokenName:  os.nativeToken,
+				PredictFee: fee.String(),
+				Timestamp:  uint64(time.Now().Unix()),
 			}
 			err = os.db.GasFee.StoreOrUpdateGasFee(gasFee)
 			if err != nil {
@@ -83,7 +89,7 @@ func (os *OracleSynchronizer) Start(ctx context.Context) error {
 	return nil
 }
 
-func (os *OracleSynchronizer) processGasFee(chainId uint64) (*big.Int, error) {
+func (os *OracleSynchronizer) processTokenPrice(chainId uint64) (*big.Int, error) {
 	var gasPrice *big.Int
 	var transactionFee *big.Int
 	var blockFee = big.NewInt(0)

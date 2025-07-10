@@ -21,28 +21,29 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type GasFeeRequest struct {
+type TokenGasPriceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ConsumerToken string                 `protobuf:"bytes,1,opt,name=consumer_token,json=consumerToken,proto3" json:"consumer_token,omitempty"`
 	ChainId       uint64                 `protobuf:"varint,2,opt,name=chain_id,json=chainId,proto3" json:"chain_id,omitempty"`
+	Symbol        string                 `protobuf:"bytes,3,opt,name=symbol,proto3" json:"symbol,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GasFeeRequest) Reset() {
-	*x = GasFeeRequest{}
+func (x *TokenGasPriceRequest) Reset() {
+	*x = TokenGasPriceRequest{}
 	mi := &file_proto_gasfee_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GasFeeRequest) String() string {
+func (x *TokenGasPriceRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GasFeeRequest) ProtoMessage() {}
+func (*TokenGasPriceRequest) ProtoMessage() {}
 
-func (x *GasFeeRequest) ProtoReflect() protoreflect.Message {
+func (x *TokenGasPriceRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_gasfee_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -54,49 +55,57 @@ func (x *GasFeeRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GasFeeRequest.ProtoReflect.Descriptor instead.
-func (*GasFeeRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use TokenGasPriceRequest.ProtoReflect.Descriptor instead.
+func (*TokenGasPriceRequest) Descriptor() ([]byte, []int) {
 	return file_proto_gasfee_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *GasFeeRequest) GetConsumerToken() string {
+func (x *TokenGasPriceRequest) GetConsumerToken() string {
 	if x != nil {
 		return x.ConsumerToken
 	}
 	return ""
 }
 
-func (x *GasFeeRequest) GetChainId() uint64 {
+func (x *TokenGasPriceRequest) GetChainId() uint64 {
 	if x != nil {
 		return x.ChainId
 	}
 	return 0
 }
 
-type GasFeeResponse struct {
+func (x *TokenGasPriceRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+type TokenGasPriceResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ReturnCode    uint64                 `protobuf:"varint,1,opt,name=return_code,json=returnCode,proto3" json:"return_code,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
-	BlockFee      uint64                 `protobuf:"varint,3,opt,name=block_fee,json=blockFee,proto3" json:"block_fee,omitempty"`
-	GasFee        uint64                 `protobuf:"varint,4,opt,name=gas_fee,json=gasFee,proto3" json:"gas_fee,omitempty"`
+	MarketPrice   string                 `protobuf:"bytes,3,opt,name=market_price,json=marketPrice,proto3" json:"market_price,omitempty"`
+	Symbol        string                 `protobuf:"bytes,4,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	PredictFee    string                 `protobuf:"bytes,5,opt,name=predict_fee,json=predictFee,proto3" json:"predict_fee,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GasFeeResponse) Reset() {
-	*x = GasFeeResponse{}
+func (x *TokenGasPriceResponse) Reset() {
+	*x = TokenGasPriceResponse{}
 	mi := &file_proto_gasfee_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GasFeeResponse) String() string {
+func (x *TokenGasPriceResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GasFeeResponse) ProtoMessage() {}
+func (*TokenGasPriceResponse) ProtoMessage() {}
 
-func (x *GasFeeResponse) ProtoReflect() protoreflect.Message {
+func (x *TokenGasPriceResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_gasfee_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -108,55 +117,65 @@ func (x *GasFeeResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GasFeeResponse.ProtoReflect.Descriptor instead.
-func (*GasFeeResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use TokenGasPriceResponse.ProtoReflect.Descriptor instead.
+func (*TokenGasPriceResponse) Descriptor() ([]byte, []int) {
 	return file_proto_gasfee_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *GasFeeResponse) GetReturnCode() uint64 {
+func (x *TokenGasPriceResponse) GetReturnCode() uint64 {
 	if x != nil {
 		return x.ReturnCode
 	}
 	return 0
 }
 
-func (x *GasFeeResponse) GetMessage() string {
+func (x *TokenGasPriceResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
 	}
 	return ""
 }
 
-func (x *GasFeeResponse) GetBlockFee() uint64 {
+func (x *TokenGasPriceResponse) GetMarketPrice() string {
 	if x != nil {
-		return x.BlockFee
+		return x.MarketPrice
 	}
-	return 0
+	return ""
 }
 
-func (x *GasFeeResponse) GetGasFee() uint64 {
+func (x *TokenGasPriceResponse) GetSymbol() string {
 	if x != nil {
-		return x.GasFee
+		return x.Symbol
 	}
-	return 0
+	return ""
+}
+
+func (x *TokenGasPriceResponse) GetPredictFee() string {
+	if x != nil {
+		return x.PredictFee
+	}
+	return ""
 }
 
 var File_proto_gasfee_proto protoreflect.FileDescriptor
 
 const file_proto_gasfee_proto_rawDesc = "" +
 	"\n" +
-	"\x12proto/gasfee.proto\x12\x0ecpchain.gasfee\"Q\n" +
-	"\rGasFeeRequest\x12%\n" +
+	"\x12proto/gasfee.proto\x12\x0ecpchain.gasfee\"p\n" +
+	"\x14TokenGasPriceRequest\x12%\n" +
 	"\x0econsumer_token\x18\x01 \x01(\tR\rconsumerToken\x12\x19\n" +
-	"\bchain_id\x18\x02 \x01(\x04R\achainId\"\x81\x01\n" +
-	"\x0eGasFeeResponse\x12\x1f\n" +
+	"\bchain_id\x18\x02 \x01(\x04R\achainId\x12\x16\n" +
+	"\x06symbol\x18\x03 \x01(\tR\x06symbol\"\xae\x01\n" +
+	"\x15TokenGasPriceResponse\x12\x1f\n" +
 	"\vreturn_code\x18\x01 \x01(\x04R\n" +
 	"returnCode\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1b\n" +
-	"\tblock_fee\x18\x03 \x01(\x04R\bblockFee\x12\x17\n" +
-	"\agas_fee\x18\x04 \x01(\x04R\x06gasFee2g\n" +
-	"\x0eGasFeeServices\x12U\n" +
-	"\x12getGasFeeByChainId\x12\x1d.cpchain.gasfee.GasFeeRequest\x1a\x1e.cpchain.gasfee.GasFeeResponse\"\x00B$\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12!\n" +
+	"\fmarket_price\x18\x03 \x01(\tR\vmarketPrice\x12\x16\n" +
+	"\x06symbol\x18\x04 \x01(\tR\x06symbol\x12\x1f\n" +
+	"\vpredict_fee\x18\x05 \x01(\tR\n" +
+	"predictFee2\x86\x01\n" +
+	"\x15TokenGasPriceServices\x12m\n" +
+	"\x1cgetTokenPriceAndGasByChainId\x12$.cpchain.gasfee.TokenGasPriceRequest\x1a%.cpchain.gasfee.TokenGasPriceResponse\"\x00B$\n" +
 	"\x12com.cpchain.gasfeeZ\x0e./proto/gasfeeb\x06proto3"
 
 var (
@@ -173,12 +192,12 @@ func file_proto_gasfee_proto_rawDescGZIP() []byte {
 
 var file_proto_gasfee_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_proto_gasfee_proto_goTypes = []any{
-	(*GasFeeRequest)(nil),  // 0: cpchain.gasfee.GasFeeRequest
-	(*GasFeeResponse)(nil), // 1: cpchain.gasfee.GasFeeResponse
+	(*TokenGasPriceRequest)(nil),  // 0: cpchain.gasfee.TokenGasPriceRequest
+	(*TokenGasPriceResponse)(nil), // 1: cpchain.gasfee.TokenGasPriceResponse
 }
 var file_proto_gasfee_proto_depIdxs = []int32{
-	0, // 0: cpchain.gasfee.GasFeeServices.getGasFeeByChainId:input_type -> cpchain.gasfee.GasFeeRequest
-	1, // 1: cpchain.gasfee.GasFeeServices.getGasFeeByChainId:output_type -> cpchain.gasfee.GasFeeResponse
+	0, // 0: cpchain.gasfee.TokenGasPriceServices.getTokenPriceAndGasByChainId:input_type -> cpchain.gasfee.TokenGasPriceRequest
+	1, // 1: cpchain.gasfee.TokenGasPriceServices.getTokenPriceAndGasByChainId:output_type -> cpchain.gasfee.TokenGasPriceResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

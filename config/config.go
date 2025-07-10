@@ -21,12 +21,21 @@ type Database struct {
 }
 
 type RPC struct {
-	RpcUrl  string `yaml:"rpc_url"`
-	ChainId uint64 `yaml:"chain_id"`
+	RpcUrl      string `yaml:"rpc_url"`
+	ChainId     uint64 `yaml:"chain_id"`
+	NativeToken string `yaml:"native_token"`
+	Decimal     uint8  `yaml:"decimal"`
+}
+
+type Symbols struct {
+	Name    string `yaml:"name"`
+	Decimal uint8  `yaml:"decimal"`
 }
 
 type Config struct {
+	SkyeyeUrl      string        `yaml:"skyeye_url"`
 	Server         Server        `yaml:"server"`
+	Symbols        []Symbols     `yaml:"symbols"`
 	RPCs           []*RPC        `yaml:"rpcs"`
 	Metrics        Server        `yaml:"metrics"`
 	MasterDb       Database      `yaml:"master_db"`

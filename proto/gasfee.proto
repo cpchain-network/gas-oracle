@@ -5,18 +5,20 @@ option java_package = "com.cpchain.gasfee";
 package cpchain.gasfee;
 
 
-message GasFeeRequest {
+message TokenGasPriceRequest {
   string consumer_token = 1;
   uint64 chain_id = 2;
+  string symbol = 3;
 }
 
-message GasFeeResponse {
+message TokenGasPriceResponse {
   uint64 return_code =1;
   string message = 2;
-  uint64 block_fee = 3;
-  uint64 gas_fee = 4;
+  string market_price =3;
+  string symbol = 4;
+  string predict_fee = 5;
 }
 
-service GasFeeServices {
-  rpc getGasFeeByChainId(GasFeeRequest) returns (GasFeeResponse) {}
+service TokenGasPriceServices {
+  rpc getTokenPriceAndGasByChainId(TokenGasPriceRequest) returns (TokenGasPriceResponse) {}
 }

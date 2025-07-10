@@ -50,7 +50,7 @@ func runGRPCSever(ctx *cli.Context, _ context.CancelCauseFunc) (cliapp.Lifecycle
 		return nil, err
 	}
 
-	grpcServerCfg := &grpc2.GasFeeRpcConfig{
+	grpcServerCfg := &grpc2.TokenPriceRpcConfig{
 		Host: cfg.Server.Host,
 		Port: cfg.Server.Port,
 	}
@@ -60,7 +60,7 @@ func runGRPCSever(ctx *cli.Context, _ context.CancelCauseFunc) (cliapp.Lifecycle
 		log.Error("new database fail", "err", err)
 	}
 
-	return grpc2.NewGasFeeRpcService(grpcServerCfg, db)
+	return grpc2.NewTokenPriceRpcService(grpcServerCfg, db)
 }
 
 func runMigrations(ctx *cli.Context) error {
