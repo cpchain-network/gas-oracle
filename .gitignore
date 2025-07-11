@@ -32,3 +32,4 @@ go.work.sum
 .vscode/
 gas-oracle
 gas-oracle.exe
+./gas-oracle.local.yaml
