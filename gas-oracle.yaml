@@ -8,16 +8,36 @@ server:
   port: 8081
 
 skyeye_url: http://54.169.32.230:38980
+symbols:
+  - name: "btc"
+    decimal: 6
+  - name: "eth"
+    decimal: 18
+  - name: "usdt"
+    decimal: 6
+  - name: "bnb"
+    decimal: 6
 
 rpcs:
-  - rpc_url: 'https://opt-sepolia.g.alchemy.com/v2/M98Abo5XZqswpBv4ppyXJ'
+  - rpc_url: 'https://eth-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ'
+    chain_id: 11155111
+    native_token: ETH
+    decimal: 18
+
+  - rpc_url: 'https://opt-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ'
     chain_id: 11155420
     native_token: ETH
+    decimal: 18
 
-  - rpc_url: 'https://arb-sepolia.g.alchemy.com/v2/M98Abo5XZqswpBv4ppyXJ'
+  - rpc_url: 'https://arb-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ'
     chain_id: 421614
     native_token: ETH
+    decimal: 18
 
+  - rpc_url: 'https://base-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ'
+    chain_id: 84532
+    native_token: ETH
+    decimal: 18
 
 master_db:
   db_host: "testnet-cpchain-pgsql-master.cnigeo2q83un.ap-southeast-1.rds.amazonaws.com"
