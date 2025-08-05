@@ -94,13 +94,13 @@ func (os *OracleSynchronizer) processTokenPrice(chainId uint64) (*big.Int, error
 	var transactionFee *big.Int
 	var blockFee = big.NewInt(0)
 	var fee = big.NewInt(0)
-
+	log.Info("process token price", "chainId", chainId)
 	latestBlockN, err := os.ethClient.GetLatestBlock(context.Background())
 	if err != nil {
 		log.Error("failed to get l1 latest block number", "err", err)
 		return nil, err
 	}
-	log.Info("start handle block fee", "blockOffset", os.blockOffset, "latestBlockN", latestBlockN.String())
+	log.Info("start handle block fee", "blockOffset", os.blockOffset, "latestBlockN", latestBlockN.String(), "chainId", chainId)
 	for i := 0; i < int(os.blockOffset); i++ {
 		blockNumber := int(latestBlockN.Int64()) - i
 		txs, baseFee, err := os.ethClient.BlockDetailByNumber(context.Background(), big.NewInt(int64(blockNumber)))
@@ -109,6 +109,10 @@ func (os *OracleSynchronizer) processTokenPrice(chainId uint64) (*big.Int, error
 			return nil, err
 		}
 		log.Info("successfully get block info", "block_num", blockNumber, "tx_len", len(txs))
+
+		if len(txs) <= 0 {
+			continue
+		}
 
 		for _, tx := range txs {
 			receipt, err := os.ethClient.TxReceiptDetailByHash(context.Background(), common.HexToHash(tx))
@@ -126,6 +130,8 @@ func (os *OracleSynchronizer) processTokenPrice(chainId uint64) (*big.Int, error
 			}
 			blockFee = new(big.Int).Add(blockFee, transactionFee)
 		}
+
+		log.Info("block fee", "blockFee", blockFee, "txLen", len(txs))
 
 		blockFee = new(big.Int).Div(blockFee, big.NewInt(int64(len(txs))))
 		fee = new(big.Int).Add(fee, new(big.Int).Div(blockFee, big.NewInt(int64(os.blockOffset))))
