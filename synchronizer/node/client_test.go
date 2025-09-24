@@ -9,7 +9,7 @@ import (
 )
 
 func TestBlockReceiptsByNumber(t *testing.T) {
-	testRpcs := [5]string{"https://eth-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ", "https://opt-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ", "https://arb-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ", "https://base-sepolia.g.alchemy.com/v2/afSCtxPWD3NE5vSjJm2GQ", "https://rpc.cpchain.com"}
+	testRpcs := [5]string{"https://eth-sepolia.g.alchemy.com/v2/ejmFf9C-9RAwjDv13Y1fVSUoUN9tm2sh", "https://opt-sepolia.g.alchemy.com/v2/ejmFf9C-9RAwjDv13Y1fVSUoUN9tm2sh", "https://arb-sepolia.g.alchemy.com/v2/ejmFf9C-9RAwjDv13Y1fVSUoUN9tm2sh", "https://base-sepolia.g.alchemy.com/v2/ejmFf9C-9RAwjDv13Y1fVSUoUN9tm2sh", "https://rpc.cpchain.com"}
 	for i := 0; i < len(testRpcs); i++ {
 		fmt.Printf("rpc %s\n", testRpcs[i])
 
