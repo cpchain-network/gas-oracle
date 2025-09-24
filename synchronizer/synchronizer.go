@@ -2,14 +2,14 @@ package synchronizer
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"math/big"
 	"sync/atomic"
 	"time"
 
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/core/types"
+	"github.com/google/uuid"
+
 	"github.com/ethereum/go-ethereum/log"
 
 	"github.com/cpchain-network/gas-oracle/common/tasks"
@@ -103,7 +103,7 @@ func (os *OracleSynchronizer) processTokenPrice(chainId uint64) (*big.Int, error
 	log.Info("start handle block fee", "blockOffset", os.blockOffset, "latestBlockN", latestBlockN.String(), "chainId", chainId)
 	for i := 0; i < int(os.blockOffset); i++ {
 		blockNumber := int(latestBlockN.Int64()) - i
-		txs, baseFee, err := os.ethClient.BlockDetailByNumber(context.Background(), big.NewInt(int64(blockNumber)))
+		txs, _, err := os.ethClient.BlockDetailByNumber(context.Background(), big.NewInt(int64(blockNumber)))
 		if err != nil {
 			log.Error("failed to get block", "blockNum", blockNumber, "err", err)
 			return nil, err
@@ -114,20 +114,24 @@ func (os *OracleSynchronizer) processTokenPrice(chainId uint64) (*big.Int, error
 			continue
 		}
 
-		for _, tx := range txs {
-			receipt, err := os.ethClient.TxReceiptDetailByHash(context.Background(), common.HexToHash(tx))
-			if err != nil {
-				log.Error("failed to get transaction receipt", "tx_hash", tx, "err", err)
-				return nil, err
+		blockReceipts, err := os.ethClient.BlockReceiptsByNumber(context.Background(), big.NewInt(int64(blockNumber)))
+		if err != nil {
+			log.Error("failed to get blockreceipts", "blockNum", blockNumber, "err", err)
+			return nil, err
+		}
+		for _, receipt := range blockReceipts {
+			if receipt == nil {
+				log.Error("receipt is nil")
+				return nil, errors.New("receipt is nil")
 			}
-			if receipt.Type == types.DynamicFeeTxType {
-				gasPrice = receipt.EffectiveGasPrice
-				transactionFee = new(big.Int).Add(gasPrice, baseFee)
-				transactionFee.Mul(transactionFee, new(big.Int).SetUint64(receipt.GasUsed))
-			} else {
-				gasPrice = receipt.EffectiveGasPrice
-				transactionFee = new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(receipt.GasUsed))
-			}
+			// if receipt.Type == types.DynamicFeeTxType {
+			// 	gasPrice = receipt.EffectiveGasPrice
+			// 	transactionFee = new(big.Int).Add(gasPrice, baseFee)
+			// 	transactionFee.Mul(transactionFee, new(big.Int).SetUint64(receipt.GasUsed))
+			// } else {
+			gasPrice = receipt.EffectiveGasPrice
+			transactionFee = new(big.Int).Mul(gasPrice, new(big.Int).SetUint64(receipt.GasUsed))
+			// }
 			blockFee = new(big.Int).Add(blockFee, transactionFee)
 		}
 
