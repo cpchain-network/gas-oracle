@@ -33,6 +33,7 @@ const (
 type EthClient interface {
 	GetLatestBlock(ctx context.Context) (*big.Int, error)
 	TxReceiptDetailByHash(ctx context.Context, hash common.Hash) (*types.Receipt, error)
+	BlockReceiptsByNumber(ctx context.Context, number *big.Int) ([]*types.Receipt, error)
 	HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
 	TxByHash(ctx context.Context, hash common.Hash) (*types.Transaction, error)
 	BlockDetailByNumber(ctx context.Context, number *big.Int) ([]string, *big.Int, error)
@@ -87,6 +88,19 @@ func (c *clnt) TxReceiptDetailByHash(ctx context.Context, hash common.Hash) (*ty
 		return nil, ethereum.NotFound
 	}
 	return txReceipt, nil
+}
+
+func (c *clnt) BlockReceiptsByNumber(ctx context.Context, number *big.Int) ([]*types.Receipt, error) {
+	ctxwt, cancel := context.WithTimeout(context.Background(), defaultWaitTransaction)
+	defer cancel()
+	var blockReceipts []*types.Receipt
+	err := c.rpc.CallContext(ctxwt, &blockReceipts, "eth_getBlockReceipts", toBlockNumArg(number))
+	if err != nil {
+		return nil, err
+	} else if blockReceipts == nil {
+		return nil, ethereum.NotFound
+	}
+	return blockReceipts, nil
 }
 
 func (c *clnt) GetLatestBlock(ctx context.Context) (*big.Int, error) {
