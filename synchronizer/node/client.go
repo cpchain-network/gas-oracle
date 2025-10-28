@@ -95,7 +95,7 @@ func (c *clnt) GetLatestBlock(ctx context.Context) (*big.Int, error) {
 
 	blockHeight, err := c.BlockNumber(ctxwt)
 	if err != nil {
-		log.Error("cannot retrieve the current chain ID: %w", err)
+		log.Error("cannot retrieve the current chain ID,", "err", err)
 		return nil, err
 	}
 	return big.NewInt(int64(blockHeight)), nil
